@@ -32,6 +32,8 @@ const helpMessage = new Discord.MessageEmbed()
 
 client.once('ready', () => {
     console.log('Links prepare to be cleaned!')
+    avatar = "https://cdn.discordapp.com/attachments/738539415843897435/741424895707054140/icon.png"
+    client.user.setAvatar(avatar);
 });
 
 //check if the message is started by the bot or without the prefix
@@ -46,7 +48,7 @@ client.on('message', message => {
     } else if (command === 'clean') {
         try {
             if (!cleanLink(args, message)) {
-                if (cleanLink(args[1].substring(0, args[1].length - 23), message)) {} else {
+                if (cleanLink(args[1].substring(0, args[1].length - 23), message)) {} else {  //remove 23 characters to remove quoted username
                     message.channel.send(message.author.toString() +
                         " gave me an invaild URL.\n Please laugh at them.");
                 }
@@ -56,7 +58,7 @@ client.on('message', message => {
                 " gave me an invaild URL.\n Please laugh at them.");
         }
     } else if (command === 'about') {
-        message.channel.send("https://github.com/lucknell");
+        message.channel.send("Learn more about me here https://github.com/Lucknell/Discord_Link_Cleaner_bot");
     } else if (command == 'help') {
         message.delete();
         message.channel.send(helpMessage);
