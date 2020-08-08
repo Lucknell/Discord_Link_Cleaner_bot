@@ -10,17 +10,17 @@ const image = 'https://i.imgur.com/er0bVso.png';
 
 const helpMessage = new Discord.MessageEmbed()
     .setColor('#0099ff')
-    .setTitle('Link Cleaner help')
+    .setTitle('by lucknell')
     .setURL('https://lucknell.github.io')
-    .setAuthor('lucknell', image, 'https://lucknell.github.io')
-    .setDescription('I am a bot that cleans links')
+    .setAuthor('Link Cleaner bot', image, 'https://lucknell.github.io')
+    .setDescription('I am a bot that cleans links when I am called.')
     .setThumbnail(image)
     .addFields({
         name: 'help',
         value: 'For help type *' + prefix + 'help*'
     }, {
         name: 'clean links',
-        value: 'to clean links type\n*' + prefix + 'clean https://google.com*'
+        value: 'to give me a link to clean type\n*' + prefix + 'clean https://google.com*'
     }, {
         name: 'say Hi',
         value: 'to say hi type *' + prefix + 'hello*'
