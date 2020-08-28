@@ -16,15 +16,18 @@ const helpMessage = new Discord.MessageEmbed()
     .setDescription('I am a bot that cleans links when I am called.')
     .setThumbnail(image)
     .addFields({
-        name: 'help',
+        name: 'Help',
         value: 'For help type *' + prefix + 'help*'
     }, {
-        name: 'clean links',
-        value: 'to give me a link to clean type\n*' + prefix + 'clean https://google.com*'
+        name: 'Clean links',
+        value: 'to give me a link to clean type\n*' + prefix + 'clean https://google.com\nor @LinkCleaner clean https://google.com'
     }, {
-        name: 'say Hi',
+        name: 'Say hi',
         value: 'to say hi type *' + prefix + 'hello*'
-    }, )
+    }, {
+        name: 'Issues? Requests?',
+        value: 'Open a issue or request at https://github.com/Lucknell/Discord_Link_Cleaner_bot'
+    })
     .addField('I hope to clean your links well', 'please don\'t break me')
     .setImage(image)
     .setTimestamp()
@@ -38,46 +41,88 @@ client.once('ready', () => {
 
 //check if the message is started by the bot or without the prefix
 client.on('message', message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
-
+    if (message.author.bot) return;
+    const msg = message.content;
     const args = message.content.slice(prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
+    const mention = message.content.substring(22, message.length).trim();
+    let user = message.mentions.users.first();
+    userId = user ? user.id : args[1];
+    console.log(command);
+    console.log(args);
+    console.log(mention + "\n");
+    if (userId === client.user.id) {
+        if (mention === 'good bot') {
+            message.react('😄');
+            message.react('🧹');
+            return
+        }
+        if (mention === 'bad bot') {
+            message.react('🖕');
+            message.react('👍');
+            message.channel.send('report it then.')
+            return
+        }
+        if (args[0] === 'clean') {
+            try {
+                if (!cleanLink(args, message)) {
+                    message.channel.send(message.author.toString() +
+                        " gave me an invaild URL.\n Please laugh at them.");
+                    return;
+                }
+            }
+            catch (ignored) {
+                message.channel.send(message.author.toString() +
+                    " gave me an invaild URL.\n Please laugh at them.");
+                return;
+            }
+        }
+    }
+    if (message.channel.type == "dm") {
+        if (validURL(msg)) {
+            cleanLink(msg, message);
+            return;
+        }
+        message.author.send(helpMessage);
+        return;
+    }
+    if (!message.content.startsWith(prefix)) return;
 
     if (command === 'ping') {
         message.reply('pong!');
+        return;
     } else if (command === 'clean') {
         try {
             if (!cleanLink(args, message)) {
-                if (cleanLink(args[1].substring(0, args[1].length - 23), message)) {} else {  //remove 23 characters to remove quoted username
-                    message.channel.send(message.author.toString() +
-                        " gave me an invaild URL.\n Please laugh at them.");
-                }
+                message.channel.send(message.author.toString() +
+                    " gave me an invaild URL.\n Please laugh at them.");
+                return;
             }
         } catch (ignored) {
             message.channel.send(message.author.toString() +
                 " gave me an invaild URL.\n Please laugh at them.");
+            return;
         }
     } else if (command === 'about') {
         message.channel.send("Learn more about me here https://github.com/Lucknell/Discord_Link_Cleaner_bot");
+        return;
     } else if (command == 'help') {
         message.delete();
         message.channel.send(helpMessage);
+        return;
     } else if (command == 'hello') {
         message.reply("Hey!");
+        return;
     }
 });
 
-//https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
-function validURL(str) { //nice
-    var pattern = new RegExp('^(http:\/\/www\.|https:\/\/www\.' +
-        '|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*' +
-        '\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$');
+function validURL(str) {
+    var pattern = new RegExp('([--:\w?@%&+~#=]*\.[a-z]{2,4}\/{0,2})((?:[?&](?:\w+)=(?:\w+))+|[--:\w?@%&+~#=]+)?');
     return !!pattern.test(str);
 }
 
 function cleanLink(args, message) {
-    console.log(args);
-    console.log(args[1]);
+    console.log("link provided :" + args);
     if (validURL(args)) {
         url = decodeHTMLSymbols(args);
         console.log(url);
@@ -89,8 +134,8 @@ function cleanLink(args, message) {
                 return true;
             } else {
                 message.delete();
-                message.channel.send("cleaned link for " + message.author.toString() +
-                    "\n" + url);
+                message.channel.send("🧹cleaned link for " + message.author.toString() +
+                    "\n" + url.replace(/,/gi, " "));
                 return true;
             }
         }
@@ -121,21 +166,19 @@ function filterLink(url) {
         "Split,html_redirect,&html_redirect,0\n" + "Split,&v=,&v=,0\n" + "Split,&mpre=,&mpre=,1\n" +
         "Split,&event=,&event=,0\n" + "Split,&redir_,&redir,0\n" +
         "Replace,amp/,amp/s/,amp/s/https://\n" + "Split,amp/s,amp/s/,1\n" + "Replace,amp/,amp/,\n" +
-        "Split,bhphotovideo.com,.html,0\n" +
-        "Append,bhphotovideo.com,.html/\n" + "Replace,1225267-11965372?,url=,url=https://staples.com\n" +
-        "Split,url=,url=,1\n" + "Split,src=,src=,0\n" + "Split,&source=,&source=,0\n" +
-        "Split,&red=,&red=,1\n" + "Split,?pf_rd_r=,?pf_rd_r=,0\n";
+        "Split,bhphotovideo.com,.html,0\n" + "Append,bhphotovideo.com,.html/\n" +
+        "Replace,1225267-11965372?,url=,url=https://staples.com\n" +
+        "Split,url=,url=,1\n" + "Split,src=,src=,0\n" + "Split,source=,source=,0\n" +
+        "Split,&red=,&red=,1\n" + "Split,?pf_rd_r=,?pf_rd_r=,0\n" + "Split,d=sec,d=sec,0\n";
     filters = defaultFilters.split("\n");
     url = url + "";
     for (i = 0; i < filters.length; i++) {
         params = filters[i] + "";
-        // console.log(params);
         filter = params.split(",");
         if (filter[0] === 'Split') {
             if (url.includes(filter[1])) {
                 index = filter[3];
                 var temp = url.split(filter[2]);
-                // console.log(temp[index]);
                 url = temp[index];
             }
         }
@@ -160,7 +203,6 @@ function filterLink(url) {
             }
         }
     }
-    // console.log(filters);
     return url;
 }
 client.login(token.token);
