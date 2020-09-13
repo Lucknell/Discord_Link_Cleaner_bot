@@ -38,4 +38,4 @@ While you can run the bot by doing `node linkcleaner.js` on your local computer,
 
 ### Troubleshooting
 
-`console.log()` will be your best friend when trying to debug issues with the bot. To read the logs from the bot you will first need to find the container id using `docker ps -a` then copy the containter id and paste it after the word logs in `docker logs <container ID>` (removing <container ID>). this will let you look at the logs and work out your issues from there. Read the Discord.js documentation.
+`console.log()` will be your best friend when trying to debug issues with the bot. To read the logs from the bot you will first need to find the container id using `docker ps -a` then copy the containter id and paste it after the word logs in `docker logs <container ID>` (removing `<container ID>` of course). this will let you look at the logs and work out your issues from there. Read the Discord.js documentation.
