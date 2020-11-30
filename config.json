@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "0": {
+      "guild_id": 0,
+      "autoClean": 0,
+      "link": "https://eff.org"
+    }
+  }
+}
